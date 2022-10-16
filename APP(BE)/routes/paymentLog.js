@@ -43,7 +43,8 @@ router.post('/filter', async function(req, res, next) {
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
     var user_id = verify_success.id;
-
+	res.setHeader("accessToken", new_access_token);
+	res.setHeader("refreshToken", new_refresh_token);
     con = await db.createConnection(inform);
     const check_militaryUnit = "select militaryUnit from user where id = ?;";
     const check_militaryUnit_param = user_id;
@@ -87,7 +88,7 @@ router.post('/filter', async function(req, res, next) {
 	//var select_log_sql = "select * from paymentLog where receiptPayment in ? and DATE(createdAt) between ? and ? order by createdAt;";
 	var [select_log_result] = await con.query(select_log_sql, select_log_param);
 	if(select_log_result.length==0){
-		res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"검색결과가 없습니다.", data:null});
+		res.send({status:200, message:"검색결과가 없습니다.", data:null});
 		return;
 	}
 	var data = [];
@@ -174,7 +175,8 @@ router.post('/filter', async function(req, res, next) {
             //res.send({status:200, message:"Ok", data:data});
         data.push(individual_data);
     }
-    res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+    //res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+	res.send({status:200, message:"Ok", data:data});
 });
 
 
@@ -203,9 +205,14 @@ res.setHeader("Access-Control-Allow-Origin", "*");
     }
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
-    //var confirmor_id = verify_success.id;
+    var user_id = verify_success.id;
 	var confirmor_id = req.body.confirmor;
-
+	res.setHeader("accessToken", new_access_token);
+    res.setHeader("refreshToken", new_refresh_token);
+	if(user_id!=confirmor_id){
+        res.send({status:200, message:'본인 계정의 로그만 변경 가능합니다.', data:null});
+        return;
+    }
 	await con.beginTransaction();
 /*
     const accessToken = req.header('accessToken');
@@ -1197,7 +1204,7 @@ res.setHeader("Access-Control-Allow-Origin", "*");
         console.log(items[i].niin);
     }
     var data = {id:log_id, receiptPayment:receiptPayment, target:target, items:items, confirmor:confirmor, createdAt:created_time, updatedAt:updated_time};
-    res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+    res.send({status:200, message:"Ok", data:data});
 	await con.commit()
 });
 
@@ -1227,6 +1234,8 @@ router.get('/', async function(req, res, next) {
     }
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
+	res.setHeader("accessToken", new_access_token);
+    res.setHeader("refreshToken", new_refresh_token);
 	var my_id = verify_success.id;
     const check_militaryUnit = "select militaryUnit from user where id = ?;";
     const check_militaryUnit_param = my_id;
@@ -1359,7 +1368,7 @@ router.get('/', async function(req, res, next) {
             //res.send({status:200, message:"Ok", data:data});
 			data.push(individual_data);
 		}
-		res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+		res.send({status:200, message:"Ok", data:data});
 	}
 });
 
@@ -1389,6 +1398,8 @@ router.get('/:id', async function(req, res, next) {
     }
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
+	res.setHeader("accessToken", new_access_token);
+    res.setHeader("refreshToken", new_refresh_token);
     var my_id = verify_success.id;
 	
     const check_militaryUnit = "select militaryUnit from user where id = ?;";
@@ -1520,7 +1531,7 @@ router.get('/:id', async function(req, res, next) {
 			var militaryUnit_blank = militaryUnit.replace(/_/g, " ");
             var user_data = {id:confirmor_id, name:user_name, email:email, phoneNumber:phoneNumber, serviceNumber:serviceNumber, rank:rank, enlistmentDate:enlistmentDate, dischargeDate:dischargeDate,militaryUnit:militaryUnit_blank,pictureName:pictureName, createdAt:user_createdAt, updatedAt:user_updatedAt };
             var data = {id:id, receiptPayment:receiptPayment, target:target,items:items, confirmor:user_data, createdAt:createdAt, updatedAt:updatedAt};
-            res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+            res.send({status:200, message:"Ok", data:data});
         }
     }
 });
@@ -1552,8 +1563,14 @@ router.post('/', async function(req, res, next) {
     }
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
-    //var confirmor_id = verify_success.id;
+	res.setHeader("accessToken", new_access_token);
+    res.setHeader("refreshToken", new_refresh_token);
+	var user_id = verify_success.id;
 	var confirmor_id = req.body.confirmor;
+	if(user_id!=confirmor_id){
+		res.send({status:200, message:'본인 계정의 로그만 입력 가능합니다.', data:null});
+        return;
+	}
 
 /*
     const accessToken = req.header('Authorization');
@@ -2076,7 +2093,7 @@ router.post('/', async function(req, res, next) {
 		console.log(items[i].niin);
 	}
 	var data = {id:log_id, receiptPayment:receiptPayment, target:target, items:items, confirmor:confirmor, createdAt:created_time, updatedAt:updated_time};
-	res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+	res.send({status:200, message:"Ok", data:data});
 	await con.commit();
 
 	//오늘날짜로 yearmonthdate 조회해서 없으면 1번부터, 있으면 마지막+1 로 아이디 만들고 나머지거 insert하기

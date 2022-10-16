@@ -35,6 +35,8 @@ router.get('/storagePlace', async function(req, res, next) {
     }
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
+	res.setHeader("accessToken", new_access_token);
+    res.setHeader("refreshToken", new_refresh_token);
     var user_id = verify_success.id;
 
     con = await db.createConnection(inform);
@@ -50,7 +52,7 @@ router.get('/storagePlace', async function(req, res, next) {
 	var select_storagePlace_sql = "select distinct(name) from storagePlace_"+militaryUnit+";";
 	var [select_storagePlace_result] = await con.query(select_storagePlace_sql);
 	if(select_storagePlace_result.length==0){
-		res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"값이 없습니다.", data:null});
+		res.send({status:200, message:"값이 없습니다.", data:null});
 		return;
 	}
 	var data = [];
@@ -60,7 +62,7 @@ router.get('/storagePlace', async function(req, res, next) {
     ////////////////
 //////내용
     ///////////////
-    res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+    res.send({status:200, message:"Ok", data:data});
 });
 
 
@@ -81,6 +83,8 @@ router.delete('/favorite', async function(req, res, next) {
     }
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
+	res.setHeader("accessToken", new_access_token);
+    res.setHeader("refreshToken", new_refresh_token);
     var user_id = verify_success.id;
 
     con = await db.createConnection(inform);
@@ -107,7 +111,7 @@ router.delete('/favorite', async function(req, res, next) {
     var select_favorite_param = [user_id, property_id];
     var [select_favorite_result] = await con.query(select_favorite_sql, select_favorite_param);
     if(select_favorite_result.length==0){
-        res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"값이 없습니다.", data:null});
+        res.send({status:200, message:"값이 없습니다.", data:null});
         await con.commit();
         return;
     }
@@ -117,7 +121,7 @@ router.delete('/favorite', async function(req, res, next) {
     var delete_favorite_param = [user_id, property_id];
     var delete_favorite_success = await myQuery(delete_favorite_sql, delete_favorite_param);
     if(!delete_favorite_success){
-        res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:500, message:"Internal Server Error", data:null});
+        res.send({status:500, message:"Internal Server Error", data:null});
         await con.commit();
         return;
     }
@@ -128,7 +132,7 @@ router.delete('/favorite', async function(req, res, next) {
     var [select_favorite_result] = await con.query(select_favorite_sql, select_favorite_param);
     var data = [];
     if(select_favorite_result.length==0){
-        res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"값이 없습니다.", data:null});
+        res.send({status:200, message:"값이 없습니다.", data:null});
         await con.commit();
         return;
     }
@@ -170,7 +174,7 @@ router.delete('/favorite', async function(req, res, next) {
         var select_medicInform_param = name;
         var [select_medicInform_result] = await con.query(select_medicInform_sql, select_medicInform_param);
         if(select_medicInform_result.length==0){
-            res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:400, message:"Bad Request", data:null});
+            res.send({status:400, message:"Bad Request", data:null});
             await con.rollback();
             return;
         }
@@ -180,7 +184,7 @@ router.delete('/favorite', async function(req, res, next) {
         var individual_data={id :id,name:name,unit:unit,totalAmount:totalAmount, amountByPlace:amountByPlace,category:category, niin:niin,expirationDate:expirationDate,logRecord:log_arr ,createdAt:created_time, updatedAt : updated_time};
         data.push(individual_data);
     }
-    res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+    res.send({status:200, message:"Ok", data:data});
     await con.commit();
     ////////////////
 //////내용
@@ -204,6 +208,8 @@ router.get('/favorite', async function(req, res, next) {
     }
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
+	res.setHeader("accessToken", new_access_token);
+    res.setHeader("refreshToken", new_refresh_token);
     var user_id = verify_success.id;
 
     con = await db.createConnection(inform);
@@ -219,7 +225,7 @@ router.get('/favorite', async function(req, res, next) {
     var select_favorite_param = user_id;
     var [select_favorite_result] = await con.query(select_favorite_sql, select_favorite_param);
     if(select_favorite_result.length==0){
-        res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"값이 없습니다.", data:null});
+        res.send({status:200, message:"값이 없습니다.", data:null});
         return;
     }
     var data = [];
@@ -260,7 +266,7 @@ router.get('/favorite', async function(req, res, next) {
         var select_medicInform_param = name;
         var [select_medicInform_result] = await con.query(select_medicInform_sql, select_medicInform_param);
         if(select_medicInform_result.length==0){
-            res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:400, message:"Bad Request", data:null});
+            res.send({status:400, message:"Bad Request", data:null});
             await con.rollback();
             return;
         }
@@ -269,7 +275,7 @@ router.get('/favorite', async function(req, res, next) {
         var individual_data={id :id,name:name,unit:unit,totalAmount:totalAmount, amountByPlace:amountByPlace,category:category, niin:niin,expirationDate:expirationDate,logRecord:log_arr ,createdAt:created_time, updatedAt : updated_time};
         data.push(individual_data);
     }
-    res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+    res.send({status:200, message:"Ok", data:data});
     await con.commit();
     ////////////////
 //////내용
@@ -293,6 +299,8 @@ router.post('/favorite', async function(req, res, next) {
     }
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
+	res.setHeader("accessToken", new_access_token);
+    res.setHeader("refreshToken", new_refresh_token);
     var user_id = verify_success.id;
 
     con = await db.createConnection(inform);
@@ -319,7 +327,7 @@ router.post('/favorite', async function(req, res, next) {
     var insert_favorite_param = [user_id, property_id];
     var insert_favorite_success = await myQuery(insert_favorite_sql, insert_favorite_param);
     if(!insert_favorite_success){
-        res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:400, message:"이미 즐겨찾기 있습니다.", data:null});
+        res.send({status:400, message:"이미 즐겨찾기 있습니다.", data:null});
         await con.commit();
         return;
     }
@@ -327,7 +335,7 @@ router.post('/favorite', async function(req, res, next) {
     var select_favorite_param = user_id;
     var [select_favorite_result] = await con.query(select_favorite_sql, select_favorite_param);
     if(select_favorite_result.length==0){
-        res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:500, message:"Internal Server Error", data:null});
+        res.send({status:500, message:"Internal Server Error", data:null});
         await con.rollback();
         return;
     }
@@ -368,7 +376,7 @@ router.post('/favorite', async function(req, res, next) {
         var select_medicInform_param = name;
         var [select_medicInform_result] = await con.query(select_medicInform_sql, select_medicInform_param);
         if(select_medicInform_result.length==0){
-            res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:400, message:"Bad Request", data:null});
+            res.send({status:400, message:"Bad Request", data:null});
             await con.rollback();
             return;
         }
@@ -377,7 +385,7 @@ router.post('/favorite', async function(req, res, next) {
         var individual_data={id :id,name:name,unit:unit,totalAmount:totalAmount, amountByPlace:amountByPlace,category:category, niin:niin,expirationDate:expirationDate,logRecord:log_arr ,createdAt:created_time, updatedAt : updated_time};
         data.push(individual_data);
     }
-    res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+    res.send({status:200, message:"Ok", data:data});
     await con.commit();
     ////////////////
 //////내용
@@ -412,6 +420,8 @@ router.post('/filter', async function(req, res, next) {
     }
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
+	res.setHeader("accessToken", new_access_token);
+    res.setHeader("refreshToken", new_refresh_token);
     var user_id = verify_success.id;
 
     con = await db.createConnection(inform);
@@ -515,7 +525,7 @@ router.post('/filter', async function(req, res, next) {
         }
         //res.setHeader({"accessToken":new_access_token, "refreshToken":new_refresh_token});
         //res.send({status:200, message:"Ok", data:data});
-        res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+        res.send({status:200, message:"Ok", data:data});
 	}
 	else{
 		var data = [];
@@ -600,7 +610,7 @@ router.post('/filter', async function(req, res, next) {
         }
         //res.setHeader({"accessToken":new_access_token, "refreshToken":new_refresh_token});
         //res.send({status:200, message:"Ok", data:data});
-        res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+        res.send({status:200, message:"Ok", data:data});
 	}
 	//var data = {};
     //res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
@@ -633,6 +643,8 @@ router.get('/', async function(req, res, next) {
     }
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
+	res.setHeader("accessToken", new_access_token);
+    res.setHeader("refreshToken", new_refresh_token);
     var user_id = verify_success.id;
 /*
 	const user_id = req.body.id;
@@ -727,7 +739,7 @@ router.get('/', async function(req, res, next) {
 		}
 		//res.setHeader({"accessToken":new_access_token, "refreshToken":new_refresh_token});
 		//res.send({status:200, message:"Ok", data:data});
-		res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+		res.send({status:200, message:"Ok", data:data});
     }
 });
 
@@ -757,6 +769,8 @@ router.get('/:id', async function(req, res, next) {
     }
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
+	res.setHeader("accessToken", new_access_token);
+    res.setHeader("refreshToken", new_refresh_token);
     var user_id = verify_success.id;
 
     const id = req.params.id;
@@ -850,7 +864,7 @@ router.get('/:id', async function(req, res, next) {
                 category = select_medicInform_result[0].category;
             }
 			var data = {id :id, name : name, unit:unit, totalAmount:totalAmount,amountByPlace:amountByPlace,category:category, niin:niin,expirationDate:expirationDate,logRecord:log_arr ,createdAt:created_time, updatedAt : updated_time};
-        	res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});	
+        	res.send({status:200, message:"Ok", data:data});	
 		}
     }
 });

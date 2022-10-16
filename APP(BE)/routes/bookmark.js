@@ -35,6 +35,8 @@ router.delete('/', async function(req, res, next) {
     }
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
+	res.setHeader("accessToken", new_access_token);
+    res.setHeader("refreshToken", new_refresh_token);
     var user_id = verify_success.id;
 
     con = await db.createConnection(inform);
@@ -53,7 +55,7 @@ router.delete('/', async function(req, res, next) {
     var select_bookmark_param = [user_id, medicine_name];
     var [select_bookmark_result] = await con.query(select_bookmark_sql, select_bookmark_param);
     if(select_bookmark_result.length==0){
-        res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"값이 없습니다.", data:null});
+        res.send({status:200, message:"값이 없습니다.", data:null});
         await con.commit();
         return;
     }
@@ -63,7 +65,7 @@ router.delete('/', async function(req, res, next) {
     var delete_bookmark_param = [user_id, medicine_name];
     var delete_bookmark_success = await myQuery(delete_bookmark_sql, delete_bookmark_param);
     if(!delete_bookmark_success){
-        res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:500, message:"Internal Server Error", data:null});
+        res.send({status:500, message:"Internal Server Error", data:null});
         await con.commit();
         return;
     }
@@ -75,7 +77,7 @@ router.delete('/', async function(req, res, next) {
     for(let i=0; i<select_bookmark_result2.length; ++i){
         data.push(select_bookmark_result2[i].name);
     }
-    res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+    res.send({status:200, message:"Ok", data:data});
     await con.commit();
     ////////////////
 //////내용
@@ -98,6 +100,8 @@ router.get('/', async function(req, res, next) {
     }
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
+	res.setHeader("accessToken", new_access_token);
+    res.setHeader("refreshToken", new_refresh_token);
     var user_id = verify_success.id;
 
     con = await db.createConnection(inform);
@@ -113,14 +117,14 @@ router.get('/', async function(req, res, next) {
     var select_bookmark_param = user_id;
     var [select_bookmark_result] = await con.query(select_bookmark_sql, select_bookmark_param);
     if(select_bookmark_result.length==0){
-		res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"값이 없습니다.", data:null});
+		res.send({status:200, message:"값이 없습니다.", data:null});
 		return;
     }
     var data = [];
     for(let i=0; i<select_bookmark_result.length; ++i){
         data.push(select_bookmark_result[i].name);
     }
-    res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+    res.send({status:200, message:"Ok", data:data});
     await con.commit();
     ////////////////
 //////내용
@@ -143,6 +147,8 @@ router.post('/', async function(req, res, next) {
     }
     var new_access_token = verify_success.accessToken;
     var new_refresh_token = verify_success.refreshToken;
+	res.setHeader("accessToken", new_access_token);
+    res.setHeader("refreshToken", new_refresh_token);
     var user_id = verify_success.id;
 
     con = await db.createConnection(inform);
@@ -161,7 +167,7 @@ router.post('/', async function(req, res, next) {
 	var insert_bookmark_param = [user_id, medicine_name];
 	var insert_bookmark_success = await myQuery(insert_bookmark_sql, insert_bookmark_param);
 	if(!insert_bookmark_success){
-		res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:400, message:"이미 북마크에 있습니다.", data:null});	
+		res.send({status:400, message:"이미 북마크에 있습니다.", data:null});	
 		await con.commit();
 		return;
 	}
@@ -169,7 +175,7 @@ router.post('/', async function(req, res, next) {
 	var select_bookmark_param = user_id;
 	var [select_bookmark_result] = await con.query(select_bookmark_sql, select_bookmark_param);
 	if(select_bookmark_result.length==0){
-		res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:500, message:"Internal Server Error", data:null});
+		res.send({status:500, message:"Internal Server Error", data:null});
 		await con.rollback();
         return;
 	}
@@ -177,7 +183,7 @@ router.post('/', async function(req, res, next) {
 	for(let i=0; i<select_bookmark_result.length; ++i){
 		data.push(select_bookmark_result[i].name);
 	}
-	res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:200, message:"Ok", data:data});
+	res.send({status:200, message:"Ok", data:data});
 	await con.commit();
 	////////////////
 //////내용 

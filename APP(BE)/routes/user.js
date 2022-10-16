@@ -245,7 +245,7 @@ router.post('/userInformation', async function(req, res, next) {
     var select_user_inform_param = userId;
     const [result] = await con.query(select_user_inform_sql ,select_user_inform_param);
     if(result.length==0){
-		res.send({status:400, message:"Bad Request", data:null});
+		res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:400, message:"Bad Request", data:null});
     }
     else{
 		var militaryUnit = result[0].militaryUnit.replace(/_/g, " ");
@@ -311,7 +311,7 @@ router.put('/', async function(req, res, next) {
     var update_user_inform_param = [name, email, phoneNumber, rank, enlistmentDate, dischargeDate,pictureName, id];
     const update_success = await myQuery(update_user_inform_sql ,update_user_inform_param);
     if(!update_success){
-        res.send({status:400, message:"Bad Request", data:null});
+        res.header({"accessToken":new_access_token, "refreshToken":new_refresh_token}).send({status:400, message:"Bad Request", data:null});
     }
     else{
 		var select_user_sql = "select * from user where id = ?;";
@@ -391,7 +391,7 @@ router.delete('/', async function(req, res, next) {
     const [check_token_result] = await con.query(select_token_sql, select_token_param);
     const [check_user_inform_result] = await con.query(select_user_inform_sql ,select_user_inform_param);
     if(check_token_result.length==0&&check_user_inform_result.length==0){
-        res.send({status:200, message:"삭제완료^^", data:null});
+        res.send({status:200, message:"Ok", data:null});
     }
     else res.send({status:400, message:"Bad Request", data:null});
 });
